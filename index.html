@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrixComp — Comparateur de Prix Afrique & Europe</title>
+<meta name="description" content="Comparez les prix sur Amazon, AliExpress, Jumia, eBay et plus encore. Économisez sur chaque achat grâce aux meilleures offres du moment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0d;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --paper: #f7f5f0;
+    --paper-2: #eeebe3;
+    --accent: #e8420a;
+    --accent-2: #ff6b35;
+    --gold: #c9a84c;
+    --teal: #0a7c6e;
+    --teal-light: #d0ede9;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--paper);
+    color: var(--ink);
+    overflow-x: hidden;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(247,245,240,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--paper-2);
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  nav ul { display: flex; gap: 2.5rem; list-style: none; }
+  nav a { font-size: 0.85rem; font-weight: 500; color: var(--ink-2); text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; transition: color .2s; }
+  nav a:hover { color: var(--accent); }
+  .nav-cta {
+    background: var(--ink); color: var(--paper) !important;
+    padding: .5rem 1.2rem; border-radius: 2rem;
+    font-size: 0.8rem !important; letter-spacing: 0.06em !important;
+    transition: background .2s !important;
+  }
+  .nav-cta:hover { background: var(--accent) !important; color: var(--paper) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    gap: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 70% at 80% 50%, rgba(232,66,10,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: var(--teal-light); color: var(--teal);
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: .4rem 1rem; border-radius: 2rem; margin-bottom: 1.5rem;
+  }
+  .hero-tag::before { content: ''; width: 6px; height: 6px; background: var(--teal); border-radius: 50%; }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--ink-2); font-weight: 300;
+    max-width: 480px; line-height: 1.7; margin-bottom: 2.5rem;
+  }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    padding: .85rem 2rem; border-radius: 3rem;
+    font-weight: 600; font-size: 0.9rem; letter-spacing: 0.02em;
+    text-decoration: none; transition: transform .2s, box-shadow .2s;
+    display: inline-flex; align-items: center; gap: .5rem;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,66,10,.3); }
+  .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: .85rem 2rem; border-radius: 3rem;
+    font-weight: 500; font-size: 0.9rem;
+    text-decoration: none; border: 1.5px solid var(--paper-2);
+    transition: border-color .2s, background .2s;
+    display: inline-flex; align-items: center; gap: .5rem;
+  }
+  .btn-secondary:hover { border-color: var(--ink); background: var(--paper-2); }
+
+  .hero-right { position: relative; }
+  .price-card {
+    background: #fff;
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 0 var(--paper-2), 0 20px 60px rgba(0,0,0,0.08);
+    border: 1px solid var(--paper-2);
+  }
+  .price-card-title {
+    font-family: var(--font-display);
+    font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 1rem;
+  }
+  .price-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .65rem .8rem; border-radius: .6rem; margin-bottom: .4rem;
+    transition: background .15s;
+  }
+  .price-row:hover { background: var(--paper); }
+  .price-row.best { background: rgba(10,124,110,.08); }
+  .platform-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: .6rem;
+    flex-shrink: 0;
+  }
+  .platform-name { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+  .price-val { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+  .price-val.best-price { color: var(--teal); }
+  .best-badge {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; background: var(--teal); color: #fff;
+    padding: .15rem .5rem; border-radius: 1rem; margin-left: .5rem;
+  }
+  .saving-strip {
+    margin-top: 1rem; padding: .8rem 1rem;
+    background: linear-gradient(135deg, rgba(232,66,10,.08), rgba(232,66,10,.04));
+    border-radius: .6rem; border: 1px solid rgba(232,66,10,.15);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .saving-label { font-size: 0.8rem; color: var(--ink-3); }
+  .saving-amount { font-family: var(--font-display); font-weight: 800; color: var(--accent); font-size: 1.1rem; }
+
+  .floating-badge {
+    position: absolute; top: -1.2rem; right: -1rem;
+    background: var(--ink); color: var(--paper);
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 0.75rem; letter-spacing: 0.04em;
+    padding: .5rem 1rem; border-radius: 2rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    white-space: nowrap;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+  /* ── STATS BAND ── */
+  .stats-band {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2.5rem 4rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    text-align: center;
+  }
+  .stat-item {}
+  .stat-val {
+    font-family: var(--font-display);
+    font-size: 2.4rem; font-weight: 800;
+    letter-spacing: -0.04em; color: #fff;
+    line-height: 1;
+  }
+  .stat-val span { color: var(--accent-2); }
+  .stat-label { font-size: 0.8rem; color: rgba(255,255,255,.5); margin-top: .3rem; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  /* ── SECTION GÉNÉRIQUE ── */
+  section { padding: 6rem 4rem; }
+  .section-tag {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: .8rem; display: block;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1.1; margin-bottom: 1rem; color: var(--ink);
+  }
+  h2 em { font-style: normal; color: var(--accent); }
+  .section-lead { font-size: 1.05rem; color: var(--ink-2); font-weight: 300; max-width: 560px; line-height: 1.7; margin-bottom: 3rem; }
+  .section-header { margin-bottom: 3rem; }
+  .section-header-split { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+
+  /* ── PLATEFORMES ── */
+  .platforms-section { background: #fff; }
+  .platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+  }
+  .platform-card {
+    border: 1.5px solid var(--paper-2);
+    border-radius: 1rem;
+    padding: 1.8rem 1.5rem;
+    display: flex; flex-direction: column; gap: 1rem;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    background: var(--paper);
+    position: relative; overflow: hidden;
+  }
+  .platform-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--c, var(--accent));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .3s;
+  }
+  .platform-card:hover { border-color: transparent; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.09); }
+  .platform-card:hover::before { transform: scaleX(1); }
+  .plat-logo {
+    width: 44px; height: 44px; border-radius: .6rem;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 800; font-size: 1rem;
+    color: #fff; background: var(--c, var(--ink));
+    flex-shrink: 0;
+  }
+  .plat-name { font-family: var(--font-display); font-weight: 700; font-size: 1rem; }
+  .plat-desc { font-size: 0.82rem; color: var(--ink-3); line-height: 1.5; }
+  .plat-geo {
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+    background: var(--paper-2); padding: .25rem .6rem; border-radius: 1rem;
+    display: inline-block; align-self: flex-start;
+  }
+
+  /* ── FEATURES ── */
+  .features-section { background: var(--paper); }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  .feature-card {
+    padding: 2rem;
+    border-radius: 1.2rem;
+    border: 1.5px solid var(--paper-2);
+    background: #fff;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .feature-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.07); transform: translateY(-2px); }
+  .feature-icon {
+    width: 48px; height: 48px;
+    border-radius: .8rem; background: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.2rem;
+    border: 1.5px solid var(--paper-2);
+  }
+  .feature-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin-bottom: .5rem; }
+  .feature-desc { font-size: 0.88rem; color: var(--ink-3); line-height: 1.65; }
+
+  /* ── CATÉGORIES ── */
+  .categories-section { background: var(--ink); color: var(--paper); }
+  .categories-section h2 { color: #fff; }
+  .categories-section .section-lead { color: rgba(255,255,255,.5); }
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+  }
+  .cat-card {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 1rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: background .2s, transform .2s;
+    cursor: default;
+  }
+  .cat-card:hover { background: rgba(255,255,255,.1); transform: translateY(-2px); }
+  .cat-icon { font-size: 1.8rem; margin-bottom: .6rem; display: block; }
+  .cat-name { font-family: var(--font-display); font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,.85); }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { background: #fff; }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    position: relative;
+  }
+  .steps-grid::before {
+    content: '';
+    position: absolute;
+    top: 2.2rem; left: 6rem; right: 6rem;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--paper-2) 0, var(--paper-2) 8px, transparent 8px, transparent 16px);
+    z-index: 0;
+  }
+  .step-card { text-align: center; position: relative; z-index: 1; }
+  .step-num {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    font-family: var(--font-display); font-weight: 800; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.2rem;
+  }
+  .step-title { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-bottom: .5rem; }
+  .step-desc { font-size: 0.82rem; color: var(--ink-3); line-height: 1.6; }
+
+  /* ── TECH SECTION ── */
+  .tech-section {
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+    padding: 6rem 4rem;
+  }
+  .tech-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+  .tech-item {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1.2rem 1.5rem;
+    background: #fff; border-radius: .8rem;
+    border: 1.5px solid var(--paper-2);
+    transition: border-color .2s;
+  }
+  .tech-item:hover { border-color: var(--ink); }
+  .tech-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0; margin-top: .45rem;
+  }
+  .tech-item-title { font-weight: 600; font-size: 0.9rem; margin-bottom: .2rem; }
+  .tech-item-desc { font-size: 0.82rem; color: var(--ink-3); line-height: 1.5; }
+
+  .code-block {
+    background: var(--ink); border-radius: 1rem;
+    padding: 1.8rem; overflow-x: auto;
+    font-family: 'Courier New', monospace; font-size: 0.8rem;
+    line-height: 1.8; color: rgba(255,255,255,.7);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .code-block .kw { color: #ff6b35; }
+  .code-block .str { color: #c9a84c; }
+  .code-block .cmt { color: rgba(255,255,255,.3); font-style: italic; }
+  .code-block .fn { color: #7dd3c8; }
+
+  /* ── NEWSLETTER ── */
+  .newsletter-section {
+    background: var(--accent);
+    color: #fff; text-align: center;
+    padding: 5rem 4rem;
+  }
+  .newsletter-section h2 { color: #fff; font-size: 2.2rem; }
+  .newsletter-section .section-lead { color: rgba(255,255,255,.8); margin: 0 auto 2rem; }
+  .nl-form { display: flex; gap: .8rem; max-width: 480px; margin: 0 auto; }
+  .nl-input {
+    flex: 1; padding: .9rem 1.2rem; border-radius: 3rem;
+    border: none; outline: none;
+    font-family: var(--font-body); font-size: 0.9rem;
+    background: rgba(255,255,255,.15); color: #fff;
+    backdrop-filter: blur(8px);
+  }
+  .nl-input::placeholder { color: rgba(255,255,255,.5); }
+  .nl-btn {
+    background: #fff; color: var(--accent);
+    padding: .9rem 1.8rem; border-radius: 3rem; border: none;
+    font-family: var(--font-display); font-weight: 700; font-size: 0.85rem;
+    cursor: pointer; transition: transform .2s;
+  }
+  .nl-btn:hover { transform: scale(1.03); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,.4);
+    padding: 3rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-logo {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: 1.2rem; color: #fff; letter-spacing: -0.03em;
+  }
+  .footer-logo span { color: var(--accent-2); }
+  .footer-links { display: flex; gap: 2rem; list-style: none; }
+  .footer-links a { color: rgba(255,255,255,.4); text-decoration: none; font-size: 0.82rem; transition: color .2s; }
+  .footer-links a:hover { color: #fff; }
+  .footer-copy { font-size: 0.78rem; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    nav { padding: 1rem 2rem; }
+    nav ul { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 7rem 2rem 3rem; gap: 3rem; }
+    .hero-right { order: -1; }
+    .stats-band { grid-template-columns: repeat(2,1fr); padding: 2rem; }
+    section { padding: 4rem 2rem; }
+    .tech-section { grid-template-columns: 1fr; padding: 4rem 2rem; gap: 3rem; }
+    .platforms-grid { grid-template-columns: repeat(2,1fr); }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .categories-grid { grid-template-columns: repeat(3,1fr); }
+    .steps-grid { grid-template-columns: repeat(2,1fr); }
+    .steps-grid::before { display: none; }
+    footer { flex-direction: column; text-align: center; padding: 2rem; }
+  }
+  @media (max-width: 600px) {
+    .platforms-grid, .features-grid, .categories-grid { grid-template-columns: 1fr; }
+    .stats-band { grid-template-columns: 1fr 1fr; }
+    .nl-form { flex-direction: column; }
+    .hero-actions { flex-direction: column; }
+  }
+
+  /* ── ANIMATIONS ── */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: .1s; }
+  .reveal-delay-2 { transition-delay: .2s; }
+  .reveal-delay-3 { transition-delay: .3s; }
+  .reveal-delay-4 { transition-delay: .4s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Prix<span>Comp</span></a>
+  <ul>
+    <li><a href="#plateformes">Plateformes</a></li>
+    <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+    <li><a href="#categories">Catégories</a></li>
+    <li><a href="#comment">Comment ça marche</a></li>
+    <li><a href="#newsletter" class="nav-cta">Être notifié</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Bénin &middot; Afrique &middot; Europe</div>
+    <h1>Comparez les prix,<br><em>économisez</em> à chaque achat</h1>
+    <p class="hero-sub">
+      PrixComp agrège en temps réel les offres de Jumia, Amazon, AliExpress et eBay. Un seul site pour trouver le meilleur prix, avec suivi automatique des disponibilités.
+    </p>
+    <div class="hero-actions">
+      <a href="#fonctionnalites" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Découvrir les fonctionnalités
+      </a>
+      <a href="#comment" class="btn-secondary">
+        Comment ça marche →
+      </a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div style="position:relative;">
+      <span class="floating-badge">Mise à jour automatique</span>
+      <div class="price-card">
+        <div class="price-card-title">Comparateur en direct — Samsung Galaxy A55</div>
+        <div class="price-row best">
+          <div style="display:flex;align-items:center;">
+            <span class="platform-dot" style="background:#f77f00;"></span>
+            <span class="platform-name">Jumia Bénin</span>
+            <span class="best-badge">Meilleur prix</span>
+          </div>
+          <span class="price-val best-price">189 990 XOF</span>
+        </div>
+        <div class="price-row">
+          <div style="display:flex;align-items:center;">
+            <span class="platform-dot" style="background:#e52e2e;"></span>
+            <span class="platform-name">AliExpress</span>
+          </div>
+          <span class="price-val">€ 218,00</span>
+        </div>
+        <div class="price-row">
+          <div style="display:flex;align-items:center;">
+            <span class="platform-dot" style="background:#ff9900;"></span>
+            <span class="platform-name">Amazon</span>
+          </div>
+          <span class="price-val">€ 249,99</span>
+        </div>
+        <div class="price-row">
+          <div style="display:flex;align-items:center;">
+            <span class="platform-dot" style="background:#e53238;"></span>
+            <span class="platform-name">eBay</span>
+          </div>
+          <span class="price-val">€ 231,50</span>
+        </div>
+        <div class="saving-strip">
+          <span class="saving-label">Économie potentielle maximale</span>
+          <span class="saving-amount">jusqu'à 60 €</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAND -->
+<div class="stats-band">
+  <div class="stat-item">
+    <div class="stat-val">4<span>+</span></div>
+    <div class="stat-label">Plateformes connectées</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val">6<span>h</span></div>
+    <div class="stat-label">Fréquence de mise à jour des prix</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val">100<span>%</span></div>
+    <div class="stat-label">Liens vérifiés automatiquement</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val">0<span>€</span></div>
+    <div class="stat-label">Aucun frais pour les visiteurs</div>
+  </div>
+</div>
+
+<!-- PLATEFORMES -->
+<section class="platforms-section" id="plateformes">
+  <div class="section-header-split">
+    <div>
+      <span class="section-tag">Nos sources</span>
+      <h2>Toutes les grandes <em>plateformes</em></h2>
+      <p class="section-lead" style="margin-bottom:0">
+        Nous connectons les marketplaces leaders en Afrique de l'Ouest et en Europe pour vous offrir la vue la plus complète du marché.
+      </p>
+    </div>
+  </div>
+  <div class="platforms-grid">
+    <div class="platform-card reveal" style="--c:#f77f00">
+      <div class="plat-logo" style="--c:#f77f00">J</div>
+      <div>
+        <div class="plat-name">Jumia</div>
+        <div class="plat-desc">Leader du e-commerce en Afrique. Flux XML synchronisé automatiquement. Disponible pour le Bénin, Nigeria, Côte d'Ivoire, Sénégal, Kenya et plus.</div>
+      </div>
+      <span class="plat-geo">Bénin · Afrique</span>
+    </div>
+    <div class="platform-card reveal reveal-delay-1" style="--c:#ff9900">
+      <div class="plat-logo" style="--c:#ff9900">A</div>
+      <div>
+        <div class="plat-name">Amazon</div>
+        <div class="plat-desc">Intégration via l'API PA-API 5.0 (Product Advertising API). Accès au catalogue complet Amazon.fr avec prix, disponibilité et ratings en temps réel.</div>
+      </div>
+      <span class="plat-geo">France · Europe</span>
+    </div>
+    <div class="platform-card reveal reveal-delay-2" style="--c:#e52e2e">
+      <div class="plat-logo" style="--c:#e52e2e">AE</div>
+      <div>
+        <div class="plat-name">AliExpress</div>
+        <div class="plat-desc">Via AliExpress Portals API avec signature HMAC sécurisée. Accès à plus de 100 millions de produits avec flux XML multi-devises (EUR, XOF).</div>
+      </div>
+      <span class="plat-geo">International</span>
+    </div>
+    <div class="platform-card reveal reveal-delay-3" style="--c:#e53238">
+      <div class="plat-logo" style="--c:#e53238">eB</div>
+      <div>
+        <div class="plat-name">eBay</div>
+        <div class="plat-desc">Connexion via eBay Partner Network (EPN) avec l'API Finding. Couverture des marchés FR, GB, DE, US avec produits neufs et reconditionnés.</div>
+      </div>
+      <span class="plat-geo">France · Europe · US</span>
+    </div>
+  </div>
+</section>
+
+<!-- FONCTIONNALITÉS -->
+<section class="features-section" id="fonctionnalites">
+  <span class="section-tag">Ce que nous faisons</span>
+  <h2>Des fonctionnalités pensées<br>pour <em>vraiment</em> vous aider</h2>
+  <p class="section-lead">Chaque fonctionnalité répond à un problème concret : trouver le meilleur prix sans passer des heures, ne jamais atterrir sur un produit indisponible.</p>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Comparaison multi-plateformes en temps réel</div>
+      <div class="feature-desc">Sur chaque fiche produit, un tableau classe automatiquement toutes les sources par prix croissant. La mise à jour se fait toutes les 6 heures via nos jobs automatisés.</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-1">
+      <div class="feature-icon">🔍</div>
+      <div class="feature-title">Vérification automatique des disponibilités</div>
+      <div class="feature-desc">Un système toutes les 6h vérifie que chaque lien mène bien à un produit disponible. Si une source devient indisponible, elle est masquée automatiquement — vous ne serez jamais redirigé vers une page morte.</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Historique des prix</div>
+      <div class="feature-desc">Chaque changement de prix est enregistré. Visualisez l'évolution du prix dans le temps et détectez les vraies promotions des fausses remises gonflées.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🎯</div>
+      <div class="feature-title">Offres flash et bons plans</div>
+      <div class="feature-desc">Une section dédiée aux produits avec les remises les plus importantes du moment, mise à jour toutes les 30 minutes. Filtrage par catégorie et plateforme.</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-1">
+      <div class="feature-icon">📖</div>
+      <div class="feature-title">Guides d'achat experts</div>
+      <div class="feature-desc">Des guides rédigés pour vous aider à choisir : quel smartphone acheter pour votre budget, les meilleurs laptops pour étudiants, les pièges à éviter lors d'achats en ligne.</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <div class="feature-icon">🔔</div>
+      <div class="feature-title">Alertes par email</div>
+      <div class="feature-desc">Inscrivez-vous à la newsletter et soyez alerté en priorité lors des meilleures offres. Vous recevez uniquement ce qui correspond à vos catégories préférées.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🏷️</div>
+      <div class="feature-title">Tracking transparent des clics</div>
+      <div class="feature-desc">Chaque lien passe par notre système de tracking court (/go/xxxx) avant la redirection. Vous savez toujours où vous allez. Nous percevons une commission sur les achats — c'est ainsi que le site reste gratuit.</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-1">
+      <div class="feature-icon">🌍</div>
+      <div class="feature-title">Multi-devises (XOF, EUR, NGN…)</div>
+      <div class="feature-desc">Les prix sont affichés dans la devise locale de chaque plateforme. Pour les achats internationaux, une indication du coût de livraison est fournie.</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">100% mobile optimisé</div>
+      <div class="feature-desc">Interface entièrement responsive, pensée pour les connexions mobiles en Afrique de l'Ouest. Chargement optimisé, images adaptatives, navigation tactile fluide.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CATÉGORIES -->
+<section class="categories-section" id="categories">
+  <span class="section-tag" style="color:var(--accent-2)">Catalogue</span>
+  <h2>6 catégories principales<br>et leurs sous-catégories</h2>
+  <p class="section-lead">
+    Du smartphone à l'appareil photo, des écouteurs aux consoles de jeux — tout ce qui compte dans la tech, au meilleur prix.
+  </p>
+  <div class="categories-grid">
+    <div class="cat-card reveal">
+      <span class="cat-icon">📱</span>
+      <div class="cat-name">Électronique</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-1">
+      <span class="cat-icon">💻</span>
+      <div class="cat-name">Informatique</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-2">
+      <span class="cat-icon">🎮</span>
+      <div class="cat-name">Jeux vidéo</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-3">
+      <span class="cat-icon">📷</span>
+      <div class="cat-name">Photographie</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-1">
+      <span class="cat-icon">🎧</span>
+      <div class="cat-name">Audio</div>
+    </div>
+    <div class="cat-card reveal reveal-delay-2">
+      <span class="cat-icon">⌚</span>
+      <div class="cat-name">Montres</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="comment">
+  <div class="section-header" style="text-align:center;">
+    <span class="section-tag">Fonctionnement</span>
+    <h2>Simple, rapide, <em>automatique</em></h2>
+    <p class="section-lead" style="margin:0 auto;">De la recherche d'un produit à l'achat, en 4 étapes.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card reveal">
+      <div class="step-num">1</div>
+      <div class="step-title">Recherchez un produit</div>
+      <div class="step-desc">Tapez le nom d'un produit dans la barre de recherche. Notre moteur parcourt l'ensemble du catalogue multi-plateformes.</div>
+    </div>
+    <div class="step-card reveal reveal-delay-1">
+      <div class="step-num">2</div>
+      <div class="step-title">Comparez les prix</div>
+      <div class="step-desc">Toutes les sources disponibles s'affichent côte à côte, triées par prix. Le meilleur deal est immédiatement mis en évidence.</div>
+    </div>
+    <div class="step-card reveal reveal-delay-2">
+      <div class="step-num">3</div>
+      <div class="step-title">Cliquez sur le meilleur prix</div>
+      <div class="step-desc">Un clic vous redirige directement vers la page du produit sur la plateforme choisie. Le lien est vérifié et garanti disponible.</div>
+    </div>
+    <div class="step-card reveal reveal-delay-3">
+      <div class="step-num">4</div>
+      <div class="step-title">Achetez et économisez</div>
+      <div class="step-desc">Finalisez votre achat sur la plateforme. Vous payez exactement le prix affiché — nous percevons une commission sur la vente, sans surcoût pour vous.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH SECTION -->
+<div class="tech-section">
+  <div>
+    <span class="section-tag">Technologie</span>
+    <h2>Une architecture <em>robuste</em> derrière chaque prix</h2>
+    <p class="section-lead">
+      Le site est construit sur Laravel avec un système de jobs automatisés qui garantit des données fraîches et des liens valides à toute heure.
+    </p>
+    <div class="tech-list">
+      <div class="tech-item reveal">
+        <div class="tech-dot"></div>
+        <div>
+          <div class="tech-item-title">Import automatique des flux produits</div>
+          <div class="tech-item-desc">Un scheduler déclenche les imports (API, XML, CSV) selon la fréquence configurée par plateforme. Les nouveaux produits arrivent en brouillon et sont vérifiés avant publication.</div>
+        </div>
+      </div>
+      <div class="tech-item reveal reveal-delay-1">
+        <div class="tech-dot"></div>
+        <div>
+          <div class="tech-item-title">Vérification de disponibilité toutes les 6h</div>
+          <div class="tech-item-desc">Chaque lien affilié est testé régulièrement par une requête HEAD légère. En cas d'échec répété, la source est masquée et une alerte est envoyée.</div>
+        </div>
+      </div>
+      <div class="tech-item reveal reveal-delay-2">
+        <div class="tech-dot"></div>
+        <div>
+          <div class="tech-item-title">Historique complet des prix</div>
+          <div class="tech-item-desc">Chaque changement de prix est enregistré en base avec horodatage. La table product_prices permet de tracer l'évolution complète dans le temps.</div>
+        </div>
+      </div>
+      <div class="tech-item reveal reveal-delay-3">
+        <div class="tech-dot"></div>
+        <div>
+          <div class="tech-item-title">Architecture multi-providers extensible</div>
+          <div class="tech-item-desc">Le pattern Strategy permet d'ajouter de nouvelles plateformes (Cdiscount, Fnac, Kilimall…) en créant un seul fichier Provider sans modifier le reste du système.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="code-block">
+<span class="cmt">// Exemple : import automatique Jumia BJ</span>
+<span class="cmt">// Déclenché toutes les heures par le scheduler</span>
+
+<span class="kw">AffiliatePlatform</span>::<span class="fn">needsSync</span>()->get()
+  -><span class="fn">each</span>(<span class="kw">fn</span>($platform) =>
+    <span class="kw">FeedImportJob</span>::<span class="fn">dispatch</span>($platform)
+  );
+
+<span class="cmt">// Chaque produit importé est créé en brouillon</span>
+<span class="kw">Product</span>::<span class="fn">create</span>([
+  <span class="str">'is_active'</span> => <span class="kw">false</span>,  <span class="cmt">// invisible front</span>
+  <span class="str">'name'</span>      => $data[<span class="str">'name'</span>],
+  <span class="str">'currency'</span>  => <span class="str">'XOF'</span>,
+]);
+
+<span class="cmt">// Vérification disponibilité — job léger</span>
+<span class="cmt">// HEAD request, 3 échecs → masquage + alerte</span>
+$response = <span class="kw">Http</span>::<span class="fn">head</span>($affiliateUrl);
+
+<span class="kw">if</span> (!$response-><span class="fn">successful</span>()) {
+  $source-><span class="fn">update</span>([<span class="str">'is_active'</span> => <span class="kw">false</span>]);
+  <span class="kw">Mail</span>::<span class="fn">to</span>($admin)-><span class="fn">send</span>(
+    <span class="kw">new</span> <span class="fn">ProductUnavailableMail</span>($source)
+  );
+}
+    </div>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section" id="newsletter">
+  <span class="section-tag" style="color:rgba(255,255,255,.6)">Restez informé</span>
+  <h2>Ne manquez aucune offre</h2>
+  <p class="section-lead">
+    Inscrivez-vous et soyez les premiers alertés lors des meilleures offres sur vos catégories préférées. Pas de spam — uniquement des bons plans vérifiés.
+  </p>
+  <div class="nl-form">
+    <input type="email" class="nl-input" placeholder="votre@email.com">
+    <button class="nl-btn">Je m'inscris</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Prix<span>Comp</span></div>
+  <ul class="footer-links">
+    <li><a href="#plateformes">Plateformes</a></li>
+    <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+    <li><a href="#categories">Catégories</a></li>
+    <li><a href="#">Mentions légales</a></li>
+    <li><a href="#">Confidentialité</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 PrixComp · Site comparateur de prix indépendant · Bénin</div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+document.querySelector('.nl-btn').addEventListener('click', function() {
+  const input = document.querySelector('.nl-input');
+  if (input.value && input.value.includes('@')) {
+    input.value = '';
+    input.placeholder = 'Merci ! Vous serez notifié des meilleures offres.';
+    this.textContent = 'Inscrit ✓';
+    this.style.background = '#0a7c6e';
+    this.style.color = '#fff';
+  }
+});
+</script>
+
+</body>
+</html>
